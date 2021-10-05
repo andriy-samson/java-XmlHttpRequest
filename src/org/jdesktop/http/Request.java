@@ -30,8 +30,7 @@ import org.jdesktop.beans.AbstractBean;
 import org.jdesktop.http.Header.Element;
 import org.jdesktop.xpath.XPathUtils;
 import org.w3c.dom.Document;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+import java.util.Base64;
 
 /**
  * <p>Represents an http request. A <code>Request</code> is constructed and then
@@ -613,10 +612,10 @@ public class Request extends AbstractBean implements Constants {
     }
 
     private static String base64Encode(String s) throws Exception {
-        return new String(new BASE64Encoder().encode(s.getBytes()));
+        return new String(Base64.getEncoder().encode(s.getBytes()));
     }
     
     private static String base64Decode(String s) throws Exception {
-        return new String(new BASE64Decoder().decodeBuffer(s));
+        return new String(Base64.getDecoder().decode(s));
     }
 }

@@ -24,6 +24,8 @@ package org.jdesktop.http;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URLDecoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import org.jdesktop.beans.AbstractBean;
@@ -555,7 +557,7 @@ public class Request extends AbstractBean implements Constants {
      */
     public void setBody(String body) {
         stringBody = body;
-        setBody(body == null ? null : body.getBytes());
+        setBody(body == null ? null : body.getBytes(getCharset()));
     }
     
     /**
@@ -597,6 +599,29 @@ public class Request extends AbstractBean implements Constants {
      */
     protected InputStream getBody() throws Exception {
         return requestBody;
+    }
+
+    /**
+     * @return Charset defined in this.headers["Content-Type"].
+     * If the content type is not set, a default UTF-8 Charset is returned.
+     */
+    private Charset getCharset() {
+    	Header ct = getHeader(HEADER_CONTENT_TYPE);
+    	if (ct != null) {
+    		String contentType = ct.getValue();
+    		if (contentType != null) {
+    			String[] params = contentType.split(";");
+    			for (int i = 0; i < params.length; i++) {
+    				String[] pair = params[i].trim().split("=");
+    				if (pair.length == 2) {
+    					if ("charset".equalsIgnoreCase(pair[0].trim())) {
+    						return Charset.forName(pair[1].trim());
+    					}
+    				}
+    			}
+    		}
+    	}
+    	return StandardCharsets.UTF_8;
     }
     
     @Override public String toString() {
